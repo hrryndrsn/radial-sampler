@@ -18,8 +18,6 @@ var bigRadius;
 //init a new ring object
 var ring0;
 
-//rotation
-var r = 0;
 
 //------------------------------------------------
 function setup() {
@@ -34,9 +32,6 @@ function setup() {
   gui.addGlobals('numShapes', 'bigRadius', 'shape', 'label', 'radius',
   'drawFill', 'fillColor', 'drawStroke', 'strokeColor');
 
-  // Don't loop automatically
- // noLoop();
-
 
 }
 
@@ -49,19 +44,15 @@ function draw() {
   //draw the ring
   // init the ring object
   var ring0 = new Ring();
+ 
+ //rotation
+  push();
+  translate(width/2, height/2);
+  rotate(frameCount*0.01);
   ring0.drawNodes();
-  ring0.play();
+  pop();
 
-  rectMode(CENTER);
-
-   translate(width/2, height/2);
-    rotate(PI/3 + r);
-    rect(0, 0, 100, 100);
-    r += 0.01;
-  
 }
-
-
 
 //------------------------------------------------
 function Ring() {
@@ -87,7 +78,7 @@ function Ring() {
     //draw big radius circle
       noFill();
       stroke(0);
-      ellipse(centX, centY, bigRadius * 2, bigRadius * 2)
+      ellipse(0, 0, bigRadius * 2, bigRadius * 2)
     //draw nodes ina circle with a radius of big radius 
 
       // set fill style to gui setting
@@ -108,11 +99,9 @@ function Ring() {
         
         var angle = TWO_PI / this.numShapes * i;
         var r = 0;
-        var x = width / 2 + cos(angle + r) * this.bigRadius;
-        var y = height / 2 + sin(angle + r) * this.bigRadius;
+        var x = 0 + cos(angle) * this.bigRadius;
+        var y = 0 + sin(angle) * this.bigRadius;
         var d = 2 * this.radius;
-        
-        
 
         //pick shapes
         switch(shape) {
