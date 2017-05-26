@@ -1,71 +1,112 @@
 //globals
-var radius;
-var nodes = [];
-var numNodes = 100;
+var numNodes;
 var bigRadius;
 var bigCenterX;
 var bigCenterY;
-var fillColor;
-
+var ring0;
+var ring1;
+var radius = 20;
 var speed;
 
-//gui
+//gui 
 var visible = true;
 var gui;
 
-
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------
 function setup() { 
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(1000, 800);
+  fill(0);
   
   //ring settings
-  bigRadius = width/5;
-  bigCenterX = width/2;
-  bigCenterY = height/2;
+  
+   bigRadius = width/3;
+   bigCenterX = width/2;
+	 bigCenterY = height/2;
   speed = 5;
-  radius = 50;
+  numNodes = 100;
 
   //Create Layout GUI
-  gui = createGui('P5 GUI');
+  gui = createGui('Controls'); //name of the gui
   gui.addGlobals('numNodes', 'bigRadius', 'speed');
   
-  // draw circles on ring  ---- > move this to the ring object
-    for(var i = 0; i < numNodes; i++) {
-
-      var angle = TWO_PI / numNodes * i;
-      var x = bigCenterX + cos(angle) * bigRadius;
-      var y = bigCenterY + sin(angle) * bigRadius;
-      var d = 2 * radius;
-
-
-      nodes.push(new Node(x, y, radius));
-
-    }   
+  ring0 = new Ring();
+  //ring1 = new Ring((numNodes/2), (bigRadius/2));
+  ring0.createNodes() // pushes node * numNodes to ring.nodes
+  //ring1.createNodes();
+  
+  
+  
 } 
 
-//-------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------
 function draw() { 
-  
   background(220);
+  
+  stroke(0);
   line(width/2, height/2, width, height/2);
+
   
-  for(var j = 0; j < nodes.length; j++) {
-    
-			//SET FILL AND DISPLAY EACH NODE
-      nodes[j].isOver();
-      nodes[j].display();
-    	
-    
-    	//ROTATES NODES
-     	var angle = TWO_PI / numNodes * j;
-    	nodes[j].x = bigCenterX + bigRadius * cos(angle + frameCount*(0.001 * speed));
-    	nodes[j].y = bigCenterY + bigRadius * sin(angle + frameCount* (0.001 * speed));
-  }
   
+  ring0.drawNodes(); // calls node.display, node.isOver for all nodes in ring.nodes AND MOVES NODES
+  //ring1.drawNodes();
 }
 
 
-//-------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------
+function Ring() {
+
+  //constructor
+	//this.numNodes = numNodes;
+  //this.bigRadius = bigRadius;
+  this.nodes = [];
+  
+  // push nodes to this.nodes array
+  this.createNodes = function() {
+  
+    for (var i = 0; i < numNodes; i++) {
+      
+      // set node position on ring
+      var angle = TWO_PI / numNodes * i;
+      var x = width/2 + cos(angle) * this.bigRadius;
+      var y = height/2 + sin(angle) * this.bigRadius;
+      
+      //push node to ring.nodes array at the ring position
+      this.nodes.push(new Node(x, y, radius));
+     	
+
+    }
+  
+  }
+  
+  // calls the node.display method for each node in nodes array
+  this.drawNodes = function() {
+  	
+    for (var j = 0; j < this.nodes.length; j++) {
+  
+			
+      this.nodes[j].isOver();
+  		this.nodes[j].display();
+      
+      
+      //ROTATE THE NODES
+      var angle = TWO_PI / numNodes * j;
+    	this.nodes[j].x =  width/2 + bigRadius * cos(angle + frameCount*(0.001 * speed));
+    	this.nodes[j].y =  height/2 + bigRadius * sin(angle + frameCount* (0.001 * speed));
+      
+      
+  	} 	
+  
+  }
+
+
+}
+
+
+
+//-----------------------------------------------------------------------
 function Node (x, y, radius) {
 	//constructor
   this.x = x;
@@ -73,7 +114,7 @@ function Node (x, y, radius) {
   this.radius = radius;
   
 
-  
+  //draw ellipse at this x,y pos
 	this.display = function () {
   	ellipse(this.x, this.y, radius, radius);
   }
@@ -89,12 +130,3 @@ function Node (x, y, radius) {
   }
 }
 
-
-
-//to do 
-
-//add speed control
-
-//make 'ring' classs with nested nodes 
-
-//add sound
