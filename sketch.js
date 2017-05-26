@@ -1,125 +1,100 @@
-// global gui params
-var numShapes = 6;
-var strokeColor = '#000000';
-var fillColor = [0, 0, 0];
-var drawStroke = false;
-var	drawFill = true;
-var radius = 20;
-var shape = ['circle', 'square'];
-var label = 'label';
-
-// gui
-var visible = true;
-var gui, gui2;
-
-// dynamic parameters
+//globals
+var radius;
+var nodes = [];
+var numNodes = 100;
 var bigRadius;
+var bigCenterX;
+var bigCenterY;
+var fillColor;
 
-//init a new ring object
-var ring0;
+var speed;
+
+//gui
+var visible = true;
+var gui;
 
 
-//------------------------------------------------
-function setup() {
+//-------------------------------------------------------------------------
+function setup() { 
+  createCanvas(windowWidth, windowHeight);
+  
+  //ring settings
+  bigRadius = width/5;
+  bigCenterX = width/2;
+  bigCenterY = height/2;
+  speed = 5;
+  radius = 50;
 
-   createCanvas(windowWidth, windowHeight);
-
-  // Calculate big radius
-  bigRadius = height / 3.0;
-
-  // Create Layout GUI
+  //Create Layout GUI
   gui = createGui('P5 GUI');
-  gui.addGlobals('numShapes', 'bigRadius', 'shape', 'label', 'radius',
-  'drawFill', 'fillColor', 'drawStroke', 'strokeColor');
+  gui.addGlobals('numNodes', 'bigRadius', 'speed');
+  
+  // draw circles on ring  ---- > move this to the ring object
+    for(var i = 0; i < numNodes; i++) {
+
+      var angle = TWO_PI / numNodes * i;
+      var x = bigCenterX + cos(angle) * bigRadius;
+      var y = bigCenterY + sin(angle) * bigRadius;
+      var d = 2 * radius;
 
 
+      nodes.push(new Node(x, y, radius));
+
+    }   
+} 
+
+//-------------------------------------------------------------------------
+function draw() { 
+  
+  background(220);
+  line(width/2, height/2, width, height/2);
+  
+  for(var j = 0; j < nodes.length; j++) {
+    
+			//SET FILL AND DISPLAY EACH NODE
+      nodes[j].isOver();
+      nodes[j].display();
+    	
+    
+    	//ROTATES NODES
+     	var angle = TWO_PI / numNodes * j;
+    	nodes[j].x = bigCenterX + bigRadius * cos(angle + frameCount*(0.001 * speed));
+    	nodes[j].y = bigCenterY + bigRadius * sin(angle + frameCount* (0.001 * speed));
+  }
+  
 }
 
 
-//------------------------------------------------
-function draw() {
-  //clear all
-  clear();
-
-  //draw the ring
-  // init the ring object
-  var ring0 = new Ring();
- 
- //rotation
-  push();
-  translate(width/2, height/2);
-  rotate(frameCount*0.01);
-  ring0.drawNodes();
-  pop();
-
-}
-
-//------------------------------------------------
-function Ring() {
-
-  this.bigRadius = bigRadius;
-
-  this.numShapes = numShapes;
-  this.strokeColor = strokeColor;
-  this.fillColor = fillColor;
-  this.drawStroke = drawStroke;
-  this.drawFill = drawFill;
+//-------------------------------------------------------------------------
+function Node (x, y, radius) {
+	//constructor
+  this.x = x;
+  this.y = y;
   this.radius = radius;
-  this.shape = shape;
-  this.label = label;
-
-  var centX = windowWidth * 0.5;
-  var centY = windowHeight * 0.5;
   
 
-  //-----------------
-  this.drawNodes = function() {
-
-    //draw big radius circle
-      noFill();
-      stroke(0);
-      ellipse(0, 0, bigRadius * 2, bigRadius * 2)
-    //draw nodes ina circle with a radius of big radius 
-
-      // set fill style to gui setting
-      if(drawFill) {
-        fill(fillColor);
-      } else {
-        noFill();
-      }
-
-      // set stroke style to gui setting
-      if(drawStroke) {
-        stroke(strokeColor);
-      } else {
-        noStroke();
-      }
-   
-      for(var i = 0; i < numShapes; i++) {
-        
-        var angle = TWO_PI / this.numShapes * i;
-        var r = 0;
-        var x = 0 + cos(angle) * this.bigRadius;
-        var y = 0 + sin(angle) * this.bigRadius;
-        var d = 2 * this.radius;
-
-        //pick shapes
-        switch(shape) {
-
-        case 'circle':
-          ellipse(x, y, d, d);
-          break;
-
-        case 'square':
-          rectMode(CENTER);
-          rect(x, y, d, d);
-          break;
-      }
+  
+	this.display = function () {
+  	ellipse(this.x, this.y, radius, radius);
+  }
+  
+  //changes color on condition
+  this.isOver = function() { 
+      if (this.y > (height/2 - this.radius/2) && this.y < (height/2 + this.radius/2) && this.x > width/2) {
+      
+      fill(225,0,0);
+    } else {
+    	fill(0);
     }
   }
-
-  //----------------
-  this.play = function() {
-    
-  }
 }
+
+
+
+//to do 
+
+//add speed control
+
+//make 'ring' classs with nested nodes 
+
+//add sound
