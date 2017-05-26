@@ -8,9 +8,20 @@ var ring1;
 var radius = 20;
 var speed;
 
+var playmode = 'sustain'
+var sound;
+
 //gui 
 var visible = true;
-var gui;
+var gui, gui2;
+var bPlay;
+
+
+//-----------------------------------------------------------------------
+function preload() {
+    sound = loadSound('assets/kick.wav');
+}
+
 
 //-----------------------------------------------------------------------
 function setup() { 
@@ -22,19 +33,19 @@ function setup() {
    bigRadius = width/3;
    bigCenterX = width/2;
 	 bigCenterY = height/2;
-  speed = 5;
-  numNodes = 100;
+   speed = 5;
+   numNodes = 100;
+   bPlay = false;
 
-  //Create Layout GUI
+  //Create Layout GUI 1
   gui = createGui('Controls'); //name of the gui
   gui.addGlobals('numNodes', 'bigRadius', 'speed');
+
   
   ring0 = new Ring();
   //ring1 = new Ring((numNodes/2), (bigRadius/2));
   ring0.createNodes() // pushes node * numNodes to ring.nodes
   //ring1.createNodes();
-  
-  
   
 } 
 
@@ -46,10 +57,9 @@ function draw() {
   stroke(0);
   line(width/2, height/2, width, height/2);
 
-  
-  
   ring0.drawNodes(); // calls node.display, node.isOver for all nodes in ring.nodes AND MOVES NODES
   //ring1.drawNodes();
+
 }
 
 
@@ -122,11 +132,24 @@ function Node (x, y, radius) {
   //changes color on condition
   this.isOver = function() { 
       if (this.y > (height/2 - this.radius/2) && this.y < (height/2 + this.radius/2) && this.x > width/2) {
-      
-      fill(225,0,0);
+       
+        fill(225,0,0);
+       sound.stop();
+        if (sound.isPlaying() === false) {
+          
+          sound.play();
+        }
+
     } else {
+      
     	fill(0);
+      
     }
+  }
+
+  this.play = function() {
+      
+
   }
 }
 
